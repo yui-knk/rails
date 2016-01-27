@@ -142,6 +142,10 @@ module ActiveRecord
           scope._select!   preload_values[:select] || values[:select] || table[Arel.star]
           scope.includes! preload_values[:includes] || values[:includes]
 
+          if preload_values[:from] || values[:from]
+            scope.from_value = preload_values[:from] || values[:from]
+          end
+
           if preload_values.key? :order
             scope.order! preload_values[:order]
           else
