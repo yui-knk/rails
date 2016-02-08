@@ -1,4 +1,6 @@
 class Person < ActiveRecord::Base
+  self.primary_key = :id
+
   has_many :readers
   has_many :secure_readers
   has_one  :reader

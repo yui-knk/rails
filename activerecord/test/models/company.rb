@@ -3,6 +3,8 @@ class AbstractCompany < ActiveRecord::Base
 end
 
 class Company < AbstractCompany
+  self.primary_key = :id
+
   self.sequence_name = :companies_nonstd_seq
 
   validates_presence_of :name

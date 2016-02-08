@@ -1,4 +1,6 @@
 class Post < ActiveRecord::Base
+  self.primary_key = :id
+
   class CategoryPost < ActiveRecord::Base
     self.table_name = "categories_posts"
     belongs_to :category

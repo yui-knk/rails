@@ -80,6 +80,14 @@ ActiveRecord::Schema.define do
     t.string :owned_essay_id
   end
 
+  execute "ALTER TABLE `authors` DROP PRIMARY KEY, ADD PRIMARY KEY (`id`, `author_address_id`);"
+  execute <<-SQL
+    ALTER TABLE `authors` PARTITION BY RANGE (`author_address_id` % 2) (
+    PARTITION p1 VALUES LESS THAN (1) ENGINE = InnoDB,
+    PARTITION p2 VALUES LESS THAN MAXVALUE ENGINE = InnoDB
+    );
+  SQL
+
   create_table :author_addresses, force: true do |t|
   end
 
@@ -209,6 +217,14 @@ ActiveRecord::Schema.define do
     t.string :description, default: ""
   end
 
+  execute "ALTER TABLE `companies` DROP PRIMARY KEY, ADD PRIMARY KEY (`id`, `rating`);"
+  execute <<-SQL
+    ALTER TABLE `companies` PARTITION BY RANGE (`rating`) (
+    PARTITION p1 VALUES LESS THAN (10) ENGINE = InnoDB,
+    PARTITION p2 VALUES LESS THAN MAXVALUE ENGINE = InnoDB
+    );
+  SQL
+
   add_index :companies, [:firm_id, :type, :rating], name: "company_index"
   add_index :companies, [:firm_id, :type], name: "company_partial_index", where: "rating > 10"
   add_index :companies, :name, name: 'company_name_index', using: :btree
@@ -252,6 +268,14 @@ ActiveRecord::Schema.define do
     t.datetime :created_on
     t.datetime :updated_on
   end
+
+  execute "ALTER TABLE `developers` DROP PRIMARY KEY, ADD PRIMARY KEY (`id`, `created_at`);"
+  execute <<-SQL
+    ALTER TABLE `developers` PARTITION BY RANGE (`created_at` % 2) (
+    PARTITION p1 VALUES LESS THAN (1) ENGINE = InnoDB,
+    PARTITION p2 VALUES LESS THAN (2) ENGINE = InnoDB
+    );
+  SQL
 
   create_table :developers_projects, force: true, id: false do |t|
     t.integer :developer_id, null: false
@@ -538,6 +562,14 @@ ActiveRecord::Schema.define do
     t.timestamps
   end
 
+  execute "ALTER TABLE `people` DROP PRIMARY KEY, ADD PRIMARY KEY (`id`, `created_at`);"
+  execute <<-SQL
+    ALTER TABLE `people` PARTITION BY RANGE (`created_at` % 2) (
+    PARTITION p1 VALUES LESS THAN (1) ENGINE = InnoDB,
+    PARTITION p2 VALUES LESS THAN (2) ENGINE = InnoDB
+    );
+  SQL
+
   create_table :peoples_treasures, id: false, force: true do |t|
     t.column :rich_person_id, :integer
     t.column :treasure_id, :integer
@@ -576,6 +608,14 @@ ActiveRecord::Schema.define do
     t.integer :tags_with_destroy_count, default: 0
     t.integer :tags_with_nullify_count, default: 0
   end
+
+  execute "ALTER TABLE `posts` DROP PRIMARY KEY, ADD PRIMARY KEY (`id`, `comments_count`);"
+  execute <<-SQL
+    ALTER TABLE `posts` PARTITION BY RANGE (`comments_count` % 2) (
+    PARTITION p1 VALUES LESS THAN (1) ENGINE = InnoDB,
+    PARTITION p2 VALUES LESS THAN MAXVALUE ENGINE = InnoDB
+    );
+  SQL
 
   create_table :price_estimates, force: true do |t|
     t.string :estimate_of_type

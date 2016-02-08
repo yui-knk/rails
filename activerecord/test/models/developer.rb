@@ -7,6 +7,8 @@ module DeveloperProjectsAssociationExtension2
 end
 
 class Developer < ActiveRecord::Base
+  self.primary_key = :id
+
   has_and_belongs_to_many :projects do
     def find_most_recent
       order("id DESC").first
