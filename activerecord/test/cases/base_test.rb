@@ -1395,7 +1395,7 @@ class BasicsTest < ActiveRecord::TestCase
   end
 
   def test_marshalling_with_associations
-    post = Post.new
+    post = ::Post.new
     post.comments.build
 
     marshalled = Marshal.dump(post)
@@ -1423,7 +1423,7 @@ class BasicsTest < ActiveRecord::TestCase
 
       fork do
         rd.close
-        post = Post.new
+        post = ::Post.new
         post.comments.build
         wr.write Marshal.dump(post)
         wr.close
@@ -1436,7 +1436,7 @@ class BasicsTest < ActiveRecord::TestCase
   end
 
   def test_marshalling_new_record_round_trip_with_associations
-    post = Post.new
+    post = ::Post.new
     post.comments.build
 
     post = Marshal.load(Marshal.dump(post))

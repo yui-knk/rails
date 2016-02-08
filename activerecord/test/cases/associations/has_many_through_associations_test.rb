@@ -64,6 +64,7 @@ class HasManyThroughAssociationsTest < ActiveRecord::TestCase
 
   def test_ordered_habtm
     person_prime = Class.new(ActiveRecord::Base) do
+      self.primary_key = :id
       def self.name; 'Person'; end
 
       has_many :readers

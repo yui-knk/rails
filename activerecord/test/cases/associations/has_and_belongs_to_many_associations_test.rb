@@ -44,6 +44,7 @@ class ProjectWithAfterCreateHook < ActiveRecord::Base
 end
 
 class DeveloperForProjectWithAfterCreateHook < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'developers'
   has_and_belongs_to_many :projects,
     :class_name => "ProjectWithAfterCreateHook",
@@ -62,6 +63,7 @@ class ProjectWithSymbolsForKeys < ActiveRecord::Base
 end
 
 class DeveloperWithSymbolsForKeys < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'developers'
   has_and_belongs_to_many :projects,
     :class_name => "ProjectWithSymbolsForKeys",

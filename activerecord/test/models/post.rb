@@ -182,10 +182,14 @@ class StiPost < Post
 end
 
 class SubStiPost < StiPost
+  # <tt>StiPost</tt> is <tt>abstract_class</tt> so redefine <tt>primary_key</tt>
+  self.primary_key = :id
   self.table_name = Post.table_name
 end
 
 class FirstPost < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'posts'
   default_scope { where(:id => 1) }
 
@@ -194,6 +198,8 @@ class FirstPost < ActiveRecord::Base
 end
 
 class PostWithDefaultInclude < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'posts'
   default_scope { includes(:comments) }
   has_many :comments, :foreign_key => :post_id
@@ -205,16 +211,22 @@ class PostWithSpecialCategorization < Post
 end
 
 class PostWithDefaultScope < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'posts'
   default_scope { order(:title) }
 end
 
 class SpecialPostWithDefaultScope < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'posts'
   default_scope { where(:id => [1, 5,6]) }
 end
 
 class PostThatLoadsCommentsInAnAfterSaveHook < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'posts'
   has_many :comments, class_name: "CommentThatAutomaticallyAltersPostBody", foreign_key: :post_id
 

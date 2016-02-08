@@ -82,11 +82,15 @@ end
 
 DeveloperSalary = Struct.new(:amount)
 class DeveloperWithAggregate < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   composed_of :salary, :class_name => 'DeveloperSalary', :mapping => [%w(salary amount)]
 end
 
 class DeveloperWithBeforeDestroyRaise < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   has_and_belongs_to_many :projects, :join_table => 'developers_projects', :foreign_key => 'developer_id'
   before_destroy :raise_if_projects_empty!
@@ -97,17 +101,23 @@ class DeveloperWithBeforeDestroyRaise < ActiveRecord::Base
 end
 
 class DeveloperWithSelect < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   default_scope { select('name') }
 end
 
 class DeveloperWithIncludes < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   has_many :audit_logs, :foreign_key => :developer_id
   default_scope { includes(:audit_logs) }
 end
 
 class DeveloperFilteredOnJoins < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   has_and_belongs_to_many :projects, -> { order('projects.id') }, :foreign_key => 'developer_id', :join_table => 'developers_projects'
 
@@ -117,6 +127,8 @@ class DeveloperFilteredOnJoins < ActiveRecord::Base
 end
 
 class DeveloperOrderedBySalary < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   default_scope { order('salary DESC') }
 
@@ -124,26 +136,36 @@ class DeveloperOrderedBySalary < ActiveRecord::Base
 end
 
 class DeveloperCalledDavid < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   default_scope { where("name = 'David'") }
 end
 
 class LazyLambdaDeveloperCalledDavid < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   default_scope lambda { where(:name => 'David') }
 end
 
 class LazyBlockDeveloperCalledDavid < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   default_scope { where(:name => 'David') }
 end
 
 class CallableDeveloperCalledDavid < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   default_scope OpenStruct.new(:call => where(:name => 'David'))
 end
 
 class ClassMethodDeveloperCalledDavid < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
 
   def self.default_scope
@@ -152,6 +174,8 @@ class ClassMethodDeveloperCalledDavid < ActiveRecord::Base
 end
 
 class ClassMethodReferencingScopeDeveloperCalledDavid < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   scope :david, -> { where(:name => 'David') }
 
@@ -161,12 +185,16 @@ class ClassMethodReferencingScopeDeveloperCalledDavid < ActiveRecord::Base
 end
 
 class LazyBlockReferencingScopeDeveloperCalledDavid < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   scope :david, -> { where(:name => 'David') }
   default_scope { david }
 end
 
 class DeveloperCalledJamis < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
 
   default_scope { where(:name => 'Jamis') }
@@ -176,18 +204,24 @@ class DeveloperCalledJamis < ActiveRecord::Base
 end
 
 class PoorDeveloperCalledJamis < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
 
   default_scope -> { where(:name => 'Jamis', :salary => 50000) }
 end
 
 class InheritedPoorDeveloperCalledJamis < DeveloperCalledJamis
+  self.primary_key = :id
+
   self.table_name = 'developers'
 
   default_scope -> { where(:salary => 50000) }
 end
 
 class MultiplePoorDeveloperCalledJamis < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
 
   default_scope -> { where(:name => 'Jamis') }
@@ -207,6 +241,8 @@ class ModuleIncludedPoorDeveloperCalledJamis < DeveloperCalledJamis
 end
 
 class EagerDeveloperWithDefaultScope < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   has_and_belongs_to_many :projects, -> { order('projects.id') }, :foreign_key => 'developer_id', :join_table => 'developers_projects'
 
@@ -214,6 +250,8 @@ class EagerDeveloperWithDefaultScope < ActiveRecord::Base
 end
 
 class EagerDeveloperWithClassMethodDefaultScope < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   has_and_belongs_to_many :projects, -> { order('projects.id') }, :foreign_key => 'developer_id', :join_table => 'developers_projects'
 
@@ -223,6 +261,8 @@ class EagerDeveloperWithClassMethodDefaultScope < ActiveRecord::Base
 end
 
 class EagerDeveloperWithLambdaDefaultScope < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   has_and_belongs_to_many :projects, -> { order('projects.id') }, :foreign_key => 'developer_id', :join_table => 'developers_projects'
 
@@ -230,6 +270,8 @@ class EagerDeveloperWithLambdaDefaultScope < ActiveRecord::Base
 end
 
 class EagerDeveloperWithBlockDefaultScope < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   has_and_belongs_to_many :projects, -> { order('projects.id') }, :foreign_key => 'developer_id', :join_table => 'developers_projects'
 
@@ -237,6 +279,8 @@ class EagerDeveloperWithBlockDefaultScope < ActiveRecord::Base
 end
 
 class EagerDeveloperWithCallableDefaultScope < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
   has_and_belongs_to_many :projects, -> { order('projects.id') }, :foreign_key => 'developer_id', :join_table => 'developers_projects'
 
@@ -244,6 +288,8 @@ class EagerDeveloperWithCallableDefaultScope < ActiveRecord::Base
 end
 
 class ThreadsafeDeveloper < ActiveRecord::Base
+  self.primary_key = :id
+
   self.table_name = 'developers'
 
   def self.default_scope

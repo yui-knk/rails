@@ -41,6 +41,7 @@ class Person < ActiveRecord::Base
 end
 
 class PersonWithDependentDestroyJobs < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'people'
 
   has_many :references, :foreign_key => :person_id
@@ -48,6 +49,7 @@ class PersonWithDependentDestroyJobs < ActiveRecord::Base
 end
 
 class PersonWithDependentDeleteAllJobs < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'people'
 
   has_many :references, :foreign_key => :person_id
@@ -55,6 +57,7 @@ class PersonWithDependentDeleteAllJobs < ActiveRecord::Base
 end
 
 class PersonWithDependentNullifyJobs < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'people'
 
   has_many :references, :foreign_key => :person_id
@@ -63,6 +66,7 @@ end
 
 
 class LoosePerson < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'people'
   self.abstract_class = true
 
@@ -76,6 +80,7 @@ end
 class LooseDescendant < LoosePerson; end
 
 class TightPerson < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'people'
 
   has_one    :best_friend,    :class_name => 'TightPerson', :foreign_key => :best_friend_id
@@ -88,6 +93,7 @@ end
 class TightDescendant < TightPerson; end
 
 class RichPerson < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'people'
 
   has_and_belongs_to_many :treasures, :join_table => 'peoples_treasures'
@@ -107,6 +113,7 @@ class RichPerson < ActiveRecord::Base
 end
 
 class NestedPerson < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'people'
 
   has_one :best_friend, :class_name => 'NestedPerson', :foreign_key => :best_friend_id
@@ -137,6 +144,7 @@ class Insure
 end
 
 class SerializedPerson < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'people'
 
   serialize :insures, Insure

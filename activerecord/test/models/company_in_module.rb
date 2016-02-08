@@ -3,6 +3,7 @@ require 'active_support/core_ext/object/with_options'
 module MyApplication
   module Business
     class Company < ActiveRecord::Base
+      self.primary_key = :id
     end
 
     class Firm < Company
@@ -21,6 +22,7 @@ module MyApplication
     end
 
     class Developer < ActiveRecord::Base
+      self.primary_key = :id
       has_and_belongs_to_many :projects
       validates_length_of :name, :within => (3..20)
     end
@@ -35,6 +37,7 @@ module MyApplication
       end
 
       class Company < ActiveRecord::Base
+        self.primary_key = :id
       end
 
       class Firm < Company
@@ -43,6 +46,7 @@ module MyApplication
 
       module Nested
         class Company < ActiveRecord::Base
+          self.primary_key = :id
         end
       end
     end
@@ -50,11 +54,13 @@ module MyApplication
 
   module Billing
     class Firm < ActiveRecord::Base
+      self.primary_key = :id
       self.table_name = 'companies'
     end
 
     module Nested
       class Firm < ActiveRecord::Base
+        self.primary_key = :id
         self.table_name = 'companies'
       end
     end

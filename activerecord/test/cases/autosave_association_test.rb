@@ -23,6 +23,7 @@ require 'models/molecule'
 class TestAutosaveAssociationsInGeneral < ActiveRecord::TestCase
   def test_autosave_validation
     person = Class.new(ActiveRecord::Base) {
+      self.primary_key = :id
       self.table_name = 'people'
       validate :should_be_cool, :on => :create
       def self.name; 'Person'; end

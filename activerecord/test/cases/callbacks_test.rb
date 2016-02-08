@@ -1,6 +1,7 @@
 require "cases/helper"
 
 class CallbackDeveloper < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'developers'
 
   class << self
@@ -48,6 +49,7 @@ class CallbackDeveloperWithFalseValidation < CallbackDeveloper
 end
 
 class ParentDeveloper < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'developers'
   attr_accessor :after_save_called
   before_validation {|record| record.after_save_called = true}
@@ -58,6 +60,7 @@ class ChildDeveloper < ParentDeveloper
 end
 
 class RecursiveCallbackDeveloper < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'developers'
 
   before_save :on_before_save
@@ -79,6 +82,7 @@ class RecursiveCallbackDeveloper < ActiveRecord::Base
 end
 
 class ImmutableDeveloper < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'developers'
 
   validates_inclusion_of :salary, :in => 50000..200000
@@ -98,6 +102,7 @@ class ImmutableDeveloper < ActiveRecord::Base
 end
 
 class ImmutableMethodDeveloper < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'developers'
 
   validates_inclusion_of :salary, :in => 50000..200000
@@ -118,6 +123,7 @@ class ImmutableMethodDeveloper < ActiveRecord::Base
 end
 
 class OnCallbacksDeveloper < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'developers'
 
   before_validation { history << :before_validation }
@@ -138,6 +144,7 @@ class OnCallbacksDeveloper < ActiveRecord::Base
 end
 
 class ContextualCallbacksDeveloper < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'developers'
 
   before_validation { history << :before_validation }
@@ -164,6 +171,7 @@ class ContextualCallbacksDeveloper < ActiveRecord::Base
 end
 
 class CallbackCancellationDeveloper < ActiveRecord::Base
+  self.primary_key = :id
   self.table_name = 'developers'
 
   attr_reader   :after_save_called, :after_create_called, :after_update_called, :after_destroy_called
