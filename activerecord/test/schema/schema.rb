@@ -73,6 +73,7 @@ ActiveRecord::Schema.define do
   end
 
   create_table :authors, force: true do |t|
+    t.integer :second_id, default: 1, null: false
     t.string :name, null: false
     t.integer :author_address_id
     t.integer :author_address_extra_id
@@ -80,9 +81,9 @@ ActiveRecord::Schema.define do
     t.string :owned_essay_id
   end
 
-  execute "ALTER TABLE `authors` DROP PRIMARY KEY, ADD PRIMARY KEY (`id`, `author_address_id`);"
+  execute "ALTER TABLE `authors` DROP PRIMARY KEY, ADD PRIMARY KEY (`id`, `second_id`);"
   execute <<-SQL
-    ALTER TABLE `authors` PARTITION BY RANGE (`author_address_id` % 2) (
+    ALTER TABLE `authors` PARTITION BY RANGE (`second_id` % 2) (
     PARTITION p1 VALUES LESS THAN (1) ENGINE = InnoDB,
     PARTITION p2 VALUES LESS THAN MAXVALUE ENGINE = InnoDB
     );
@@ -600,6 +601,7 @@ ActiveRecord::Schema.define do
       t.text    :body, null: false
     end
     t.string  :type
+    t.integer :second_id, default: 1, null: false
     t.integer :comments_count, default: 0
     t.integer :taggings_count, default: 0
     t.integer :taggings_with_delete_all_count, default: 0
@@ -609,9 +611,9 @@ ActiveRecord::Schema.define do
     t.integer :tags_with_nullify_count, default: 0
   end
 
-  execute "ALTER TABLE `posts` DROP PRIMARY KEY, ADD PRIMARY KEY (`id`, `comments_count`);"
+  execute "ALTER TABLE `posts` DROP PRIMARY KEY, ADD PRIMARY KEY (`id`, `second_id`);"
   execute <<-SQL
-    ALTER TABLE `posts` PARTITION BY RANGE (`comments_count` % 2) (
+    ALTER TABLE `posts` PARTITION BY RANGE (`second_id` % 2) (
     PARTITION p1 VALUES LESS THAN (1) ENGINE = InnoDB,
     PARTITION p2 VALUES LESS THAN MAXVALUE ENGINE = InnoDB
     );

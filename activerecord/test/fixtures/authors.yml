@@ -1,5 +1,6 @@
 david:
   id: 1
+  second_id: 1
   name: David
   author_address_id: 1
   author_address_extra_id: 2
@@ -8,8 +9,10 @@ david:
 
 mary:
   id: 2
+  second_id: 1
   name: Mary
 
 bob:
   id: 3
+  second_id: 1
   name: Bob

@@ -10,6 +10,7 @@ welcome:
 
 thinking:
   id: 2
+  second_id: 1
   author_id: 1
   title: So I was thinking
   body: Like I hopefully always am
@@ -20,6 +21,7 @@ thinking:
 
 authorless:
   id: 3
+  second_id: 1
   author_id: 0
   title: I don't have any comments
   body: I just don't want to
@@ -27,6 +29,7 @@ authorless:
 
 sti_comments:
   id: 4
+  second_id: 1
   author_id: 1
   title: sti comments
   body: hello
@@ -34,6 +37,7 @@ sti_comments:
 
 sti_post_and_comments:
   id: 5
+  second_id: 1
   author_id: 1
   title: sti me
   body: hello
@@ -41,6 +45,7 @@ sti_post_and_comments:
 
 sti_habtm:
   id: 6
+  second_id: 1
   author_id: 1
   title: habtm sti test
   body: hello
@@ -49,12 +54,14 @@ sti_habtm:
 eager_other:
   id: 7
   author_id: 2
+  second_id: 1
   title: eager loading with OR'd conditions
   body: hello
   type: Post
 
 misc_by_bob:
   id: 8
+  second_id: 1
   author_id: 3
   title: misc post by bob
   body: hello
@@ -62,6 +69,7 @@ misc_by_bob:
 
 misc_by_mary:
   id: 9
+  second_id: 1
   author_id: 2
   title: misc post by mary
   body: hello
@@ -69,6 +77,7 @@ misc_by_mary:
 
 other_by_bob:
   id: 10
+  second_id: 1
   author_id: 3
   title: other post by bob
   body: hello
@@ -76,6 +85,7 @@ other_by_bob:
 
 other_by_mary:
   id: 11
+  second_id: 1
   author_id: 2
   title: other post by mary
   body: hello
