@@ -77,7 +77,10 @@ class LoosePerson < ActiveRecord::Base
   accepts_nested_attributes_for :best_friend, :best_friend_of, :best_friends
 end
 
-class LooseDescendant < LoosePerson; end
+class LooseDescendant < LoosePerson
+  # Parent class (LoosePerson) is abstract_class, so define <tt>primary_key</tt> here.
+  self.primary_key = :id
+end
 
 class TightPerson < ActiveRecord::Base
   self.primary_key = :id
