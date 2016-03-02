@@ -45,8 +45,6 @@ module ActionMailer
         register_observers(options.delete(:observers))
 
         options.each { |k,v| send("#{k}=", v) }
-
-        ActionDispatch::IntegrationTest.send :include, ActionMailer::TestCase::ClearTestDeliveries
       end
     end
 

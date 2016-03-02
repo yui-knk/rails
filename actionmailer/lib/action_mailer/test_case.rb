@@ -117,3 +117,6 @@ module ActionMailer
     include ClearTestDeliveries
   end
 end
+
+# Reset `ActionMailer::Base.deliveries` after every test in `ActionDispatch::IntegrationTest`
+ActionDispatch::IntegrationTest.send :include, ActionMailer::TestCase::ClearTestDeliveries
