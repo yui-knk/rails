@@ -66,6 +66,6 @@ class Time
   end
 
   def to_time
-    ActiveSupport.to_time_preserves_timezone ? self : utc.getlocal
+    ActiveSupport.to_time_preserves_timezone ? self : getutc.localtime
   end
 end

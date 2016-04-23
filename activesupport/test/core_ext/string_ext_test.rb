@@ -461,6 +461,27 @@ class StringConversionsTest < ActiveSupport::TestCase
     end
   end
 
+  def test_string_to_time_preserves_timezone_mode
+    prev = ActiveSupport.to_time_preserves_timezone
+    ActiveSupport.to_time_preserves_timezone = true
+
+    with_env_tz "Europe/Moscow" do
+      assert_equal Time.utc(2005, 2, 27, 23, 50), "2005-02-27 23:50".to_time(:utc)
+      assert_equal Time.local(2005, 2, 27, 23, 50), "2005-02-27 23:50".to_time
+      assert_equal Time.utc(2005, 2, 27, 23, 50, 19, 275038), "2005-02-27T23:50:19.275038".to_time(:utc)
+      assert_equal Time.local(2005, 2, 27, 23, 50, 19, 275038), "2005-02-27T23:50:19.275038".to_time
+      assert_equal Time.utc(2039, 2, 27, 23, 50), "2039-02-27 23:50".to_time(:utc)
+      assert_equal Time.local(2039, 2, 27, 23, 50), "2039-02-27 23:50".to_time
+      assert_equal Time.local(2011, 2, 27, 17, 50), "2011-02-27 13:50 -0100".to_time
+      assert_equal Time.utc(2011, 2, 27, 23, 50), "2011-02-27 22:50 -0100".to_time(:utc)
+      assert_equal Time.local(2005, 2, 27, 22, 50), "2005-02-27 14:50 -0500".to_time
+      assert_nil "010".to_time
+      assert_nil "".to_time
+    end
+  ensure
+    ActiveSupport.to_time_preserves_timezone = prev
+  end
+
   def test_string_to_time_utc_offset
     with_env_tz "US/Eastern" do
       assert_equal 0, "2005-02-27 23:50".to_time(:utc).utc_offset
@@ -468,6 +489,20 @@ class StringConversionsTest < ActiveSupport::TestCase
       assert_equal 0, "2005-02-27 22:50 -0100".to_time(:utc).utc_offset
       assert_equal(-18000, "2005-02-27 22:50 -0100".to_time.utc_offset)
     end
+  end
+
+  def test_string_to_time_utc_offset_preserves_timezone_mode
+    prev = ActiveSupport.to_time_preserves_timezone
+    ActiveSupport.to_time_preserves_timezone = true
+
+    with_env_tz "US/Eastern" do
+      assert_equal 0, "2005-02-27 23:50".to_time(:utc).utc_offset
+      assert_equal(-18000, "2005-02-27 23:50".to_time.utc_offset)
+      assert_equal 0, "2005-02-27 22:50 -0100".to_time(:utc).utc_offset
+      assert_equal(-3600, "2005-02-27 22:50 -0100".to_time.utc_offset)
+    end
+  ensure
+    ActiveSupport.to_time_preserves_timezone = prev
   end
 
   def test_partial_string_to_time
@@ -478,6 +513,21 @@ class StringConversionsTest < ActiveSupport::TestCase
       assert_equal Time.local(now.year, now.month, now.day, 17, 50), "13:50 -0100".to_time
       assert_equal Time.utc(now.year, now.month, now.day, 23, 50), "22:50 -0100".to_time(:utc)
     end
+  end
+
+  def test_partial_string_to_time_preserves_timezone_mode
+    prev = ActiveSupport.to_time_preserves_timezone
+    ActiveSupport.to_time_preserves_timezone = true
+
+    with_env_tz "Europe/Moscow" do # use timezone which does not observe DST.
+      now = Time.now
+      assert_equal Time.local(now.year, now.month, now.day, 23, 50), "23:50".to_time
+      assert_equal Time.utc(now.year, now.month, now.day, 23, 50), "23:50".to_time(:utc)
+      assert_equal Time.local(now.year, now.month, now.day, 17, 50), "13:50 -0100".to_time
+      assert_equal Time.utc(now.year, now.month, now.day, 23, 50), "22:50 -0100".to_time(:utc)
+    end
+  ensure
+    ActiveSupport.to_time_preserves_timezone = prev
   end
 
   def test_standard_time_string_to_time_when_current_time_is_standard_time

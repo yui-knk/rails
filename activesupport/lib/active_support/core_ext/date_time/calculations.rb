@@ -6,7 +6,7 @@ class DateTime
       if ActiveSupport.to_time_preserves_timezone
         Time.new(year, month, day, hour, min, (sec + sec_fraction), utc_offset)
       else
-        super.utc.getlocal
+        super.getutc.localtime
       end
     end
   end
