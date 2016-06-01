@@ -14,7 +14,7 @@ module ActiveRecord
       #   https://bugs.ruby-lang.org/issues/7166
       new_hash = Hash[hash]
       hash.each do |key, _|
-        if (key.is_a?(Symbol)) && klass.attribute_alias?(key)
+        if (key.is_a?(Symbol) || key.is_a?(String)) && klass.attribute_alias?(key)
           new_hash[klass.attribute_alias(key)] = new_hash.delete(key)
         end
       end

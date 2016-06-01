@@ -195,6 +195,13 @@ module ActiveRecord
       assert_equal expected.to_sql, actual.to_sql
     end
 
+    def test_aliased_attribute_with_string_key
+      expected = Topic.where('heading' =>  'The First Topic')
+      actual   = Topic.where('title' => 'The First Topic')
+
+      assert_equal expected.to_sql, actual.to_sql
+    end
+
     def test_where_error
       assert_raises(ActiveRecord::StatementInvalid) do
         Post.where(:id => { 'posts.author_id' => 10 }).first
