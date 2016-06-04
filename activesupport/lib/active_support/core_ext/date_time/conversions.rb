@@ -37,7 +37,7 @@ class DateTime
       to_default_s
     end
   end
-  alias_method :to_default_s, :to_s if instance_methods(false).include?(:to_s)
+  alias_method :to_default_s, :to_s
   alias_method :to_s, :to_formatted_s
 
   # Returns a formatted string of the offset from UTC, or an alternative
