@@ -1,33 +1,46 @@
 module ActiveRecord
   class Relation
     class WhereClause # :nodoc:
-      attr_reader :binds
+      class PredicateWithBinds < Struct.new(:predicate, :binds)
+        def self.empty
+          new(nil, [])
+        end
+
+        def empty?
+          predicate.nil? && binds.empty?
+        end
+      end
+
+      attr_reader :predicate_binds_collection
 
       delegate :any?, :empty?, to: :predicates
 
-      def initialize(predicates, binds)
-        @predicates = predicates
-        @binds = binds
+      # [PredicateWithBinds, PredicateWithBinds, ...]
+      def initialize(predicate_binds_collection)
+        @predicate_binds_collection = predicate_binds_collection
+      end
+
+      def binds
+        predicate_binds_collection.reject(&:empty?).inject([]) do |results, predicate_binds|
+          results + predicate_binds.binds
+        end
       end
 
       def +(other)
         WhereClause.new(
-          predicates + other.predicates,
-          binds + other.binds,
+          predicate_binds_collection.reject(&:empty?) + other.predicate_binds_collection
         )
       end
 
       def merge(other)
         WhereClause.new(
-          predicates_unreferenced_by(other) + other.predicates,
-          non_conflicting_binds(other) + other.binds,
+          predicate_binds_unreferenced_by(other) + other.predicate_binds_collection
         )
       end
 
       def except(*columns)
         WhereClause.new(
-          predicates_except(columns),
-          binds_except(columns),
+          predicate_binds_except(columns)
         )
       end
 
@@ -37,10 +50,7 @@ module ActiveRecord
         elsif other.empty?
           other
         else
-          WhereClause.new(
-            [ast.or(other.ast)],
-            binds + other.binds
-          )
+          WhereClause.new([PredicateWithBinds.new(ast.or(other.ast), binds + other.binds)])
         end
       end
 
@@ -77,16 +87,20 @@ module ActiveRecord
       end
 
       def invert
-        WhereClause.new(inverted_predicates, binds)
+        WhereClause.new(inverted_predicates)
       end
 
       def self.empty
-        @empty ||= new([], [])
+        @empty ||= new([PredicateWithBinds.empty])
       end
 
       protected
 
-      attr_reader :predicates
+      def predicates
+        predicate_binds_collection.reject(&:empty?).inject([]) do |results, predicate_binds|
+          results << predicate_binds.predicate
+        end
+      end
 
       def referenced_columns
         @referenced_columns ||= begin
@@ -97,9 +111,9 @@ module ActiveRecord
 
       private
 
-      def predicates_unreferenced_by(other)
-        predicates.reject do |n|
-          equality_node?(n) && other.referenced_columns.include?(n.left)
+      def predicate_binds_unreferenced_by(other)
+        predicate_binds_collection.reject(&:empty?).reject do |predicate_bind|
+          equality_node?(predicate_bind.predicate) && other.referenced_columns.include?(predicate_bind.predicate.left)
         end
       end
 
@@ -114,7 +128,9 @@ module ActiveRecord
       end
 
       def inverted_predicates
-        predicates.map { |node| invert_predicate(node) }
+        predicate_binds_collection.map do |predicate_bind|
+          PredicateWithBinds.new(invert_predicate(predicate_bind.predicate), predicate_bind.binds)
+        end
       end
 
       def invert_predicate(node)
@@ -132,8 +148,10 @@ module ActiveRecord
         end
       end
 
-      def predicates_except(columns)
-        predicates.reject do |node|
+      def predicate_binds_except(columns)
+        predicate_binds_collection.reject(&:empty?).reject do |predicate_bind|
+          node = predicate_bind.predicate
+
           case node
           when Arel::Nodes::Between, Arel::Nodes::In, Arel::Nodes::NotIn, Arel::Nodes::Equality, Arel::Nodes::NotEqual, Arel::Nodes::LessThan, Arel::Nodes::LessThanOrEqual, Arel::Nodes::GreaterThan, Arel::Nodes::GreaterThanOrEqual
             subrelation = (node.left.kind_of?(Arel::Attributes::Attribute) ? node.left : node.right)

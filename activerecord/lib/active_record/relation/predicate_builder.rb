@@ -31,11 +31,23 @@ module ActiveRecord
       expand_from_hash(attributes)
     end
 
-    def create_binds(attributes)
+    # def create_binds(attributes)
+    #   attributes = convert_dot_notation_to_hash(attributes)
+    #   create_binds_for_hash(attributes)
+    # end
+
+    # merge build_from_hash(create_binds) to one method
+    def build_predicate_binds_collection_from_hash(attributes)
       attributes = convert_dot_notation_to_hash(attributes)
-      create_binds_for_hash(attributes)
+
+      attributes.map do |key, value|
+        results, binds = create_binds_for_hash({key => value})
+        parts = expand_from_hash(results)
+        Relation::WhereClause::PredicateWithBinds.new(parts.first, binds)
+      end
     end
 
+    # Create Arel Node, start point of Arel in Rails world
     def expand(column, value)
       # Find the foreign key when using queries such as:
       # Post.where(author: author)
@@ -92,7 +104,10 @@ module ActiveRecord
       end
     end
 
-
+    # Change real value to Arel::Nodes::BindParam(virtual value)
+    # and generates Relation::QueryAttribute(real value) collection as binds
+    #
+    # attributes:  { id: 1..10, name: 'foo' }
     def create_binds_for_hash(attributes)
       result = attributes.dup
       binds = []

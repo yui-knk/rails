@@ -3,31 +3,29 @@ module ActiveRecord
     class WhereClauseFactory # :nodoc:
       def initialize(klass, predicate_builder)
         @klass = klass
-        @predicate_builder = predicate_builder
+        @predicate_builder = predicate_builder # PredicateBuilder
       end
 
       def build(opts, other)
-        binds = []
-
         case opts
-        when String, Array
-          parts = [klass.send(:sanitize_sql, other.empty? ? opts : ([opts] + other))]
-        when Hash
+        when String, Array # only parts
+          parts_with_binds = [klass.send(:sanitize_sql, other.empty? ? opts : ([opts] + other))].flat_map do |part|
+            WhereClause::PredicateWithBinds.new(part, [])
+          end
+        when Hash # parts and binds
           attributes = predicate_builder.resolve_column_aliases(opts)
           attributes = klass.send(:expand_hash_conditions_for_aggregates, attributes)
           attributes.stringify_keys!
 
-          attributes, binds = predicate_builder.create_binds(attributes)
-
-          parts = predicate_builder.build_from_hash(attributes)
-        when Arel::Nodes::Node
-          parts = [opts]
-          binds = other
+          parts_with_binds = predicate_builder.build_predicate_binds_collection_from_hash(attributes)
+        when Arel::Nodes::Node # parts and binds
+          parts_with_binds = [WhereClause::PredicateWithBinds.new(opts, other)]
         else
           raise ArgumentError, "Unsupported argument type: #{opts} (#{opts.class})"
         end
 
-        WhereClause.new(parts, binds)
+        # WhereClause.new(predicates, binds)
+        WhereClause.new(parts_with_binds)
       end
 
       protected
