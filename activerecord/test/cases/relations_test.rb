@@ -446,6 +446,16 @@ class RelationTest < ActiveRecord::TestCase
     assert_equal({ 'salary' => 100_000 }, Developer.none.where(salary: 100_000).where_values_hash)
   end
 
+  def test_not_relation_where_values_hash
+    assert_equal({}, Developer.where.not(salary: 100_000).where_values_hash)
+    assert_equal({ 'salary' => 100_000 }, Developer.where(salary: 100_000).where.not(salary: 1_000).where_values_hash)
+  end
+
+  def test_same_key_relation_where_values_hash
+    assert_equal({ 'salary' => 2_000 }, Developer.where(salary: 100_000).where(salary: 2_000).where_values_hash)
+    assert_equal({}, Developer.where(salary: (1..1000)).where_values_hash)
+  end
+
   def test_null_relation_sum
     ac = Aircraft.new
     assert_equal Hash.new, ac.engines.group(:id).sum(:id)

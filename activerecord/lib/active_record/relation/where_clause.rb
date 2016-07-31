@@ -55,24 +55,28 @@ module ActiveRecord
       end
 
       def to_h(table_name = nil)
-        equalities = predicates.grep(Arel::Nodes::Equality)
+        equalities = predicate_binds_collection.reject(&:empty?).select do |predicate_bind|
+          predicate_bind.predicate.is_a? Arel::Nodes::Equality
+        end
+
         if table_name
-          equalities = equalities.select do |node|
-            node.left.relation.name == table_name
+          equalities = equalities.select do |predicate_bind|
+            predicate_bind.predicate.left.relation.name == table_name
           end
         end
 
-        binds = self.binds.map { |attr| [attr.name, attr.value] }.to_h
-
-        equalities.map { |node|
-          name = node.left.name
-          [name, binds.fetch(name.to_s) {
+        equalities.map { |predicate_bind|
+          node = predicate_bind.predicate
+          key = node.left.name
+          value = predicate_bind.binds.first.try!(:value) || begin
             case node.right
             when Array then node.right.map(&:val)
             when Arel::Nodes::Casted, Arel::Nodes::Quoted
               node.right.val
             end
-          }]
+          end
+
+          [key, value]
         }.to_h
       end
 
