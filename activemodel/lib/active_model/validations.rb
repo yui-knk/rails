@@ -87,7 +87,7 @@ module ActiveModel
         validates_with BlockValidator, _merge_attributes(attr_names), &block
       end
 
-      VALID_OPTIONS_FOR_VALIDATE = [:on, :if, :unless, :prepend].freeze # :nodoc:
+      VALID_OPTIONS_FOR_VALIDATE = [:on, :off, :if, :unless, :prepend].freeze # :nodoc:
 
       # Adds a validation method or block to the class. This is useful when
       # overriding the +validate+ instance method becomes too unwieldy and
@@ -163,6 +163,14 @@ module ActiveModel
           options[:if] = Array(options[:if])
           options[:if].unshift ->(o) {
             !(Array(options[:on]) & Array(o.validation_context)).empty?
+          }
+        end
+
+        if options.key?(:off)
+          options = options.dup
+          options[:unless] = Array(options[:unless])
+          options[:unless].unshift ->(o) {
+            !(Array(options[:off]) & Array(o.validation_context)).empty?
           }
         end
 
