@@ -33,11 +33,11 @@ module ActionView
 
         private
 
-          def value(object)
+          def value
             if @allow_method_names_outside_object
-              object.public_send @method_name if object && object.respond_to?(@method_name)
+              @object.public_send @method_name if @object && @object.respond_to?(@method_name)
             else
-              object.public_send @method_name if object
+              @object.public_send @method_name if @object
             end
           end
 
@@ -48,7 +48,7 @@ module ActionView
               if value_came_from_user?(object) && object.respond_to?(method_before_type_cast)
                 object.public_send(method_before_type_cast)
               else
-                value(object)
+                value
               end
             end
           end
@@ -148,7 +148,7 @@ module ActionView
               options[:include_blank] ||= true unless options[:prompt]
             end
 
-            value = options.fetch(:selected) { value(object) }
+            value = options.fetch(:selected) { value() }
             select = content_tag("select", add_options(option_tags, options, value), html_options)
 
             if html_options["multiple"] && options.fetch(:include_hidden, true)
