@@ -203,7 +203,11 @@ module ActiveRecord
   # (has_many, has_one) when there is at least 1 child associated instance.
   # ex: if @project.tasks.size > 0, DeleteRestrictionError will be raised when trying to destroy @project
   class DeleteRestrictionError < ActiveRecordError #:nodoc:
-    def initialize(name = nil)
+    attr_reader :owner
+
+    def initialize(owner = nil, name = nil)
+      @owner = owner
+
       if name
         super("Cannot delete record because of dependent #{name}")
       else
